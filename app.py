@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Serve your index.html from the "static" folder at root URL
+# Serve index.html from the static folder
 @app.route('/')
 def serve_index():
     return send_from_directory('static', 'index.html')
@@ -27,5 +27,5 @@ def generate():
     return jsonify({"response": response.choices[0].text.strip()})
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Use Render's assigned port or default to 5000
+    port = int(os.environ.get("PORT", 5000))  # Use Render’s assigned port or 5000 by default
     app.run(host="0.0.0.0", port=port)

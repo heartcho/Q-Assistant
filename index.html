@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,109 +12,144 @@
             padding: 0;
         }
         .container {
-            width: 80%;
-            margin: 0 auto;
+            max-width: 800px;
+            margin: 20px auto;
             padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
         .header {
-            background-color: #0078d4;
-            color: white;
-            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
         }
         .header h1 {
             margin: 0;
+            color: #0078d4;
+        }
+        .create-btn {
+            background-color: #0078d4;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
+        .create-btn:hover {
+            background-color: #005a9e;
         }
         .question-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
             padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
         .question-card textarea {
             width: 100%;
             padding: 10px;
-            margin: 10px 0;
+            margin-bottom: 10px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 5px;
         }
         .output {
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            background-color: #e9e9e9;
             padding: 10px;
-            margin-top: 10px;
-        }
-        .create-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #0078d4;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: 5px;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Q&A Highlights Assistant</h1>
-        <button class="create-btn" onclick="createQuestion()">Create</button>
-    </div>
-    <div class="container" id="question-container">
-        <!-- Preset Questions -->
-        <div class="question-card">
-            <textarea placeholder="Question">What are the key features of our product?</textarea>
-            <textarea placeholder="Name of teammate you worked with">John Doe</textarea>
-            <textarea placeholder="Highlights">User-friendly interface, High performance, Scalable architecture, 24/7 customer support</textarea>
-            <div class="output">Our product boasts a user-friendly interface, high performance, scalable architecture, and 24/7 customer support.</div>
+    <div class="container">
+        <div class="header">
+            <h1>Q&A Highlights Assistant</h1>
+            <button class="create-btn" onclick="createQuestionCard()">Create</button>
         </div>
-        <div class="question-card">
-            <textarea placeholder="Question">How does our product compare to competitors?</textarea>
-            <textarea placeholder="Name of teammate you worked with">Jane Smith</textarea>
-            <textarea placeholder="Highlights">More affordable, Better customer reviews, Advanced features, Longer warranty period</textarea>
-            <div class="output">Compared to our competitors, our product is more affordable, has better customer reviews, offers advanced features, and comes with a longer warranty period.</div>
-        </div>
-        <div class="question-card">
-            <textarea placeholder="Question">What improvements can we make to our product?</textarea>
-            <textarea placeholder="Name of teammate you worked with">Alice Johnson</textarea>
-            <textarea placeholder="Highlights">Improve user interface, Add more features, Enhance customer support, Reduce cost</textarea>
-            <div class="output">To improve our product, we can enhance the user interface, add more features, improve customer support, and reduce the cost.</div>
+        <div id="question-container">
+            <!-- Preset questions will be added here -->
         </div>
     </div>
+
     <script>
-        function createQuestion() {
+        const presetQuestions = [
+            {
+                question: "What are the key features of our product?",
+                teammate: "Alice",
+                highlights: "User-friendly interface, High performance, Scalable architecture, 24/7 customer support"
+            },
+            {
+                question: "How does our product compare to competitors?",
+                teammate: "Bob",
+                highlights: "More affordable, Better customer reviews, Advanced features, Longer warranty period"
+            },
+            {
+                question: "What improvements can we make?",
+                teammate: "Charlie",
+                highlights: "Improve user documentation, Enhance customer support, Add more integrations, Optimize performance"
+            }
+        ];
+
+        function createQuestionCard(questionData = {}) {
             const container = document.getElementById('question-container');
             const card = document.createElement('div');
             card.className = 'question-card';
-            card.innerHTML = `
-                <textarea placeholder="Question"></textarea>
-                <textarea placeholder="Name of teammate you worked with"></textarea>
-                <textarea placeholder="Highlights"></textarea>
-                <div class="output"></div>
-            `;
+
+            const questionTextarea = document.createElement('textarea');
+            questionTextarea.placeholder = 'Enter your question here...';
+            questionTextarea.value = questionData.question || '';
+            questionTextarea.oninput = () => updateOutput(card);
+
+            const teammateTextarea = document.createElement('textarea');
+            teammateTextarea.placeholder = 'Name of teammate you worked with';
+            teammateTextarea.value = questionData.teammate || '';
+            teammateTextarea.oninput = () => updateOutput(card);
+
+            const highlightsTextarea = document.createElement('textarea');
+            highlightsTextarea.placeholder = 'Enter highlights here...';
+            highlightsTextarea.value = questionData.highlights || '';
+            highlightsTextarea.oninput = () => updateOutput(card);
+
+            const outputDiv = document.createElement('div');
+            outputDiv.className = 'output';
+            outputDiv.innerText = 'AI-generated response will appear here...';
+
+            card.appendChild(questionTextarea);
+            card.appendChild(teammateTextarea);
+            card.appendChild(highlightsTextarea);
+            card.appendChild(outputDiv);
             container.appendChild(card);
+
+            updateOutput(card);
         }
 
-        document.addEventListener('input', function(event) {
-            if (event.target.tagName.toLowerCase() === 'textarea') {
-                const card = event.target.closest('.question-card');
-                const question = card.querySelector('textarea:nth-child(1)').value;
-                const highlights = card.querySelector('textarea:nth-child(3)').value;
-                const output = card.querySelector('.output');
-                output.textContent = generateAIResponse(question, highlights);
-            }
-        });
+        function updateOutput(card) {
+            const question = card.querySelector('textarea:nth-child(1)').value;
+            const teammate = card.querySelector('textarea:nth-child(2)').value;
+            const highlights = card.querySelector('textarea:nth-child(3)').value;
 
-        function generateAIResponse(question, highlights) {
-            if (!question || !highlights) return '';
-            return `Based on the question "${question}", the key points include: ${highlights}.`;
+            generateAIResponse(question, highlights, teammate).then(response => {
+                card.querySelector('.output').innerText = response;
+            });
         }
+
+        async function generateAIResponse(question, highlights, teammate) {
+            const response = await fetch("https://your-backend.onrender.com/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question, highlights, teammate })
+            });
+            const data = await response.json();
+            return data.response;
+        }
+
+        // Initialize with preset questions
+        presetQuestions.forEach(createQuestionCard);
     </script>
 </body>
 </html>

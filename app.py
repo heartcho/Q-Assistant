@@ -1,0 +1,26 @@
+
+from flask import Flask, request, jsonify
+import openai
+import os
+
+app = Flask(__name__)
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+@app.route("/generate", methods=["POST"])
+def generate():
+    data = request.json
+    question = data.get("question", "")
+    highlights = data.get("highlights", "")
+    teammate = data.get("teammate", "")
+
+    prompt = f"Question: {question}\nTeammate: {teammate}\nHighlights: {highlights}\n\nGenerate a helpful, natural language response:"
+    
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=150
+    )
+    return jsonify({"response": response.choices[0].text.strip()})
+
+if __name__ == "__main__":
+    app.run()

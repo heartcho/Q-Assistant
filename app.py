@@ -1,12 +1,16 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import openai
 import os
+from openai import OpenAI
 
 app = Flask(__name__)
-CORS(app, origins=["https://heartcho.github.io"])  # Allow your GitHub Pages frontend
+CORS(app, origins=["https://heartcho.github.io"])  # allow your frontend origin
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    raise ValueError("OPENAI_API_KEY environment variable not set")
+
+client = OpenAI()
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -17,8 +21,8 @@ def generate():
 
     prompt = f"Question: {question}\nTeammate: {teammate}\nHighlights: {highlights}\n\nGenerate a helpful, natural language response:"
 
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # or "gpt-4" if you have access and want better responses
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
         messages=[
             {"role": "user", "content": prompt}
         ],
@@ -27,7 +31,7 @@ def generate():
 
     answer = response.choices[0].message.content.strip()
     return jsonify({"response": answer})
-    
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)

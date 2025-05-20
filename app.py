@@ -16,14 +16,18 @@ def generate():
     teammate = data.get("teammate", "")
 
     prompt = f"Question: {question}\nTeammate: {teammate}\nHighlights: {highlights}\n\nGenerate a helpful, natural language response:"
-    
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
+
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # or "gpt-4" if you have access and want better responses
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
         max_tokens=150
     )
-    return jsonify({"response": response.choices[0].text.strip()})
 
+    answer = response.choices[0].message.content.strip()
+    return jsonify({"response": answer})
+    
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)

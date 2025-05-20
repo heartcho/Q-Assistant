@@ -1,17 +1,12 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import openai
 import os
 
 app = Flask(__name__)
-CORS(app, origins=["https://heartcho.github.io"])  # Allow only your GitHub Pages site
+CORS(app, origins=["https://heartcho.github.io"])  # Allow your GitHub Pages frontend
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# Serve index.html from the static folder
-@app.route('/')
-def serve_index():
-    return send_from_directory('static', 'index.html')
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -30,5 +25,5 @@ def generate():
     return jsonify({"response": response.choices[0].text.strip()})
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Use Render’s assigned port or 5000 by default
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)

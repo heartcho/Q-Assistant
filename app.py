@@ -1,10 +1,14 @@
-
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import openai
 import os
 
 app = Flask(__name__)
 openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# Serve your index.html from the "static" folder at root URL
+@app.route('/')
+def serve_index():
+    return send_from_directory('static', 'index.html')
 
 @app.route("/generate", methods=["POST"])
 def generate():
